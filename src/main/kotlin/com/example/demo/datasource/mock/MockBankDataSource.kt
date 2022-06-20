@@ -10,7 +10,7 @@ class MockBankDataSource : BankDataSource {
     val banks = mutableListOf(
         Bank("1234", 3.14, 17),
         Bank("1010", 17.0, 0),
-        Bank("1234", 0.0, 100),
+        Bank("124", 0.0, 100),
     )
 
     override fun retrieveBanks(): Collection<Bank> = banks
@@ -21,8 +21,18 @@ class MockBankDataSource : BankDataSource {
 
     override fun createBank(bank: Bank): Bank {
         if (banks.any { it.accountNumber == bank.accountNumber}) {
-            throw java.lang.IllegalArgumentException("Bank with account number ${bank.accountNumber} already exists.")
+            throw IllegalArgumentException("Bank with account number ${bank.accountNumber} already exists.")
         }
+        banks.add(bank)
+
+        return bank
+    }
+
+    override fun updateBank(bank: Bank): Bank {
+        val currentBank = banks.firstOrNull { it.accountNumber == bank.accountNumber }
+            ?: throw NoSuchElementException("Could not find a bank with account number ${bank.accountNumber} to update.")
+
+        banks.remove(currentBank)
         banks.add(bank)
 
         return bank
